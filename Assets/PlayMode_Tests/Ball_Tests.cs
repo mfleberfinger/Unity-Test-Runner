@@ -54,6 +54,34 @@ namespace Tests
 		}
 
 		/// <summary>
+		/// Make sure ball bouncing works against paddle
+		/// </summary>
+		/// <returns></returns>
+        [UnityTest]
+		public IEnumerator Ball_Bounce_Test()
+		{
+			GameObject ball = CreateBall();
+			Ball script = ball.GetComponent<Ball>();
+			Rigidbody rb = ball.GetComponent<Rigidbody>();
+
+			script.speed = 10;
+
+            Vector3 ogvec = Vector3.right * 10;
+            rb.velocity = ogvec;
+
+			Vector3 initialPosition = ball.transform.position;
+
+            
+
+			yield return new WaitUntil(() => (ball.GetComponent<Rigidbody>().velocity != ogvec));
+
+			Assert.That(ball.GetComponent<Rigidbody>().velocity.magnitude, Is.EqualTo(ogvec.magnitude),
+                "Checking that bounce is lossless");
+
+			yield return null;
+		}
+
+		/// <summary>
 		/// Creates a test ball in the scene.
 		/// </summary>
 		/// <returns>A stationary ball at the scene origin.</returns>
