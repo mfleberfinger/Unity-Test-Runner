@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
+using UnityEngine.SceneManagement;
 
 namespace Tests
 {
@@ -60,11 +61,11 @@ namespace Tests
         [UnityTest]
 		public IEnumerator Ball_Bounce_Test()
 		{
-			GameObject ball = CreateBall();
-			Ball script = ball.GetComponent<Ball>();
-			Rigidbody rb = ball.GetComponent<Rigidbody>();
+            SceneManager.LoadScene(0);
+            yield return null;  // wait for scene to load
 
-			script.speed = 10;
+            GameObject ball = GameObject.FindGameObjectWithTag("Ball");
+			Rigidbody rb = ball.GetComponent<Rigidbody>();
 
             Vector3 ogvec = Vector3.right * 10;
             rb.velocity = ogvec;
@@ -73,7 +74,7 @@ namespace Tests
 
             
 
-			yield return new WaitUntil(() => (ball.GetComponent<Rigidbody>().velocity != ogvec));
+			yield return new WaitUntil(() => (Vector3.Dot(ball.GetComponent<Rigidbody>().velocity,ogvec) < 0));
 
 			Assert.That(ball.GetComponent<Rigidbody>().velocity.magnitude, Is.EqualTo(ogvec.magnitude),
                 "Checking that bounce is lossless");
